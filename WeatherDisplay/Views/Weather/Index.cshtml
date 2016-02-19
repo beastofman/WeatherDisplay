@@ -1,0 +1,92 @@
+﻿@using WeatherDisplay.Models
+@model WeatherDisplay.Models.WeatherWithForecastViewModel
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Погода в Москве</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Погода в Москве" />
+</head>
+<body>
+    @if (Model == null)
+    {
+        <div>Прогноз погоды не может быть показан, т.к. отсутствуют данные</div>
+    }
+    else
+    {
+        if (Model.Weather.Count > 0)
+        {
+            <div>
+                <h2>Погода сегодня</h2>
+                <ul>
+                    @{
+            var today = Model.Weather.FirstOrDefault(t => !t.IsEmpty);
+            if (today != null)
+            {
+                <li><strong>@Html.DisplayNameFor(w => today.Sunrise):</strong> @today.Sunrise</li>
+                        <li><strong>@Html.DisplayNameFor(w => today.Sunset):</strong> @today.Sunset</li>
+            }
+                    }
+                    @foreach (var weather in Model.Weather)
+                    {
+                        <li>
+                            @if (weather.IsNow(Model.Now))
+                            {
+                                <i><h4>Сейчас</h4></i>
+                            }
+                            else
+                            {
+                                switch (weather.DayPart)
+                                {
+                                    case WeatherDayPart.Morning:
+                                        <h4>Утром</h4>
+                                        break;
+                                    case WeatherDayPart.Day:
+                                    <h4>Днем</h4>
+                                        break;
+                                    case WeatherDayPart.Evening:
+                                    <h4>Вечером</h4>
+                                        break;
+                                    case WeatherDayPart.Night:
+                                    <h4>Ночью</h4>
+                                        break;
+                                }
+                            }
+                            <ul>
+                                <li><strong>@Html.DisplayNameFor(w => weather.Temperature):</strong> @weather.Temperature</li>
+                                <li><strong>@Html.DisplayNameFor(w => weather.Condition):</strong> @weather.Condition</li>
+                                <li><strong>@Html.DisplayNameFor(w => weather.Cloudness):</strong> @weather.Cloudness</li>
+                                <li><strong>@Html.DisplayNameFor(w => weather.Pressure):</strong> @weather.Pressure</li>
+                                <li><strong>@Html.DisplayNameFor(w => weather.Humidity):</strong> @weather.Humidity</li>
+                                <li><strong>@Html.DisplayNameFor(w => weather.WindDirection):</strong> @weather.WindDirection</li>
+                                <li><strong>@Html.DisplayNameFor(w => weather.WindSpeed):</strong> @weather.WindSpeed</li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+        if (Model.Forecast.Count > 0)
+        {
+            <div>
+                <h2>Прогноз погоды на ближайшие 3 дня</h2>
+                <ul>
+                    @foreach (var forecast in Model.Forecast)
+                    {
+                        <li>
+                            <h4>@forecast.ForecastDate</h4>
+                            <ul>
+                                <li>Утром: @forecast.TemperatureMorning</li>
+                                <li>Днем: @forecast.TemperatureDay</li>
+                                <li>Вечером: @forecast.TemperatureEvening</li>
+                                <li>Ночью: @forecast.TemperatureNight</li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    }
+</body>
+</html>
